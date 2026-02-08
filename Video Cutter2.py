@@ -188,10 +188,14 @@ def build_ffmpeg_cmd(
         return cmd
 
     if mode == "hap":
+        # HAP (DXT texture compression) requires dimensions divisible by 4.
+        # Auto-pad to the next multiple of 4 so any input resolution can convert.
+        hap_resolution_filter = "pad=ceil(iw/4)*4:ceil(ih/4)*4"
         cmd = base + [
             "-c:v", "hap",
             "-format", "hap",
             "-pix_fmt", "rgba",
+            "-vf", hap_resolution_filter,
         ]
         if mute_audio:
             cmd += ["-an"]
